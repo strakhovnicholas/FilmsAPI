@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
@@ -26,13 +25,6 @@ public class UserController {
 
     @PostMapping
     public User addUser(@Valid @RequestBody User user) throws ValidationException {
-        try {
-            checkIfUserIsValid(user);
-        } catch (ValidationException e) {
-            log.error(e.getMessage());
-            throw e;
-        }
-
         user.setId(getNextId());
         if (Objects.isNull(user.getName()) || user.getName().isBlank()) {
             user.setName(user.getLogin());
@@ -49,13 +41,6 @@ public class UserController {
             throw new NotFoundException("Пользователь  не найден");
         }
 
-        try {
-            checkIfUserIsValid(userForUpdate);
-        } catch (ValidationException e) {
-            log.error(e.getMessage());
-            throw e;
-        }
-
         User currentUser = users.get(userForUpdate.getId());
         users.put(currentUser.getId(), userForUpdate);
 
@@ -70,20 +55,5 @@ public class UserController {
                 .max()
                 .orElse(0);
         return ++currentMaxId;
-    }
-
-
-    private void checkIfUserIsValid(User user) throws ValidationException {
-        if (Objects.isNull(user.getEmail()) || user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            throw new ValidationException("Неправильный формат email");
-        }
-
-        if (Objects.isNull(user.getLogin()) || user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            throw new ValidationException("Логин не может быть пустым или содержать пробелы");
-        }
-
-        if (Objects.isNull(user.getBirthday()) || user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Путешественникам во времени регистрация запрещена");
-        }
     }
 }
