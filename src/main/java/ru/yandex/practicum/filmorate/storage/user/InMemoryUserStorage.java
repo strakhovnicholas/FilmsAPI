@@ -43,6 +43,16 @@ public class InMemoryUserStorage implements UserStorage {
         return users.values();
     }
 
+    @Override
+    public User getUser(long id) {
+        if (!users.containsKey(id)) {
+            log.error("Пользователь не найден");
+            throw new NotFoundException("Пользователь  не найден");
+        }
+
+        return users.get(id);
+    }
+
 
     private long getNextId() {
         long currentMaxId = users.keySet()

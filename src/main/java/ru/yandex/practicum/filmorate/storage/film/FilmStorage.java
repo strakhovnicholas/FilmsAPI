@@ -9,5 +9,7 @@ public interface FilmStorage {
 
     Collection<Film> getFilms();
 
+    Film getFilm(long id);
+
     Film updateFilm(Film film);
 }
