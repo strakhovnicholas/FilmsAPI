@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
 import java.util.Map;
@@ -17,28 +16,26 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final FilmStorage storage;
     private final FilmService service;
 
     @Autowired
-    public FilmController(FilmStorage storage, FilmService service) {
-        this.storage = storage;
+    public FilmController(FilmService service) {
         this.service = service;
     }
 
     @GetMapping
     public Collection<Film> getFilms() {
-        return storage.getFilms();
+        return service.getFilms();
     }
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
-        return storage.addFilm(film);
+        return service.addFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) throws ValidationException {
-        return storage.updateFilm(film);
+        return service.updateFilm(film);
     }
 
     @PutMapping("/{id}/like/{userId}")

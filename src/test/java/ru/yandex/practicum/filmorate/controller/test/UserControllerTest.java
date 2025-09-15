@@ -19,7 +19,7 @@ public class UserControllerTest {
     public void beforeEachReset() {
         UserStorage storage = new InMemoryUserStorage();
         UserService service = new UserService(storage);
-        controller = new UserController(storage, service);
+        controller = new UserController(service);
     }
 
     @Test

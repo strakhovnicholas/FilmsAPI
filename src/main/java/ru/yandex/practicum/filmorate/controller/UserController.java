@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,29 +16,27 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    UserStorage storage;
     UserService service;
 
     @Autowired
-    public UserController(UserStorage storage, UserService service) {
-        this.storage = storage;
+    public UserController(UserService service) {
         this.service = service;
     }
 
     @GetMapping
     public Collection<User> getAllUsers() {
-        return storage.getAllUsers();
+        return service.getAllUsers();
     }
 
 
     @PostMapping
     public User addUser(@Valid @RequestBody User user) throws ValidationException {
-        return storage.addUser(user);
+        return service.addUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User userForUpdate) {
-        return storage.updateUser(userForUpdate);
+        return service.updateUser(userForUpdate);
     }
 
     @PutMapping("{id}/friends/{friendId}")
