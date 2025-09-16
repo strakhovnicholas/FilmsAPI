@@ -1,56 +1,70 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private HashMap<Long, Film> films = new HashMap<>();
-    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
+    private final FilmService service;
+
+    @Autowired
+    public FilmController(FilmService service) {
+        this.service = service;
+    }
 
     @GetMapping
     public Collection<Film> getFilms() {
-        return films.values();
+        return service.getFilms();
     }
 
     @PostMapping
-    public Film addFilm(@Valid @RequestBody Film film) throws ValidationException {
-
-        film.setId(getNextId());
-        films.put(film.getId(), film);
-
-        return film;
+    public Film addFilm(@Valid @RequestBody Film film) {
+        return service.addFilm(film);
     }
 
     @PutMapping
-    public Film updateFilm(@Valid @RequestBody Film filmDataForUpdate) throws ValidationException {
-        if (Objects.isNull(filmDataForUpdate.getId()) || !films.containsKey(filmDataForUpdate.getId())) {
-            log.error("Фильм не найден");
-            throw new NotFoundException("Фильм не найден");
-        }
-
-        Film currentFilmValue = films.get(filmDataForUpdate.getId());
-        films.put(currentFilmValue.getId(), filmDataForUpdate);
-
-        return films.get(filmDataForUpdate.getId());
+    public Film updateFilm(@Valid @RequestBody Film film) throws ValidationException {
+        return service.updateFilm(film);
     }
 
-    private long getNextId() {
-        long currentMaxId = films.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    @PutMapping("/{id}/like/{userId}")
+    public void likeFilm(@PathVariable long id, @PathVariable long userId) throws NotFoundException {
+        service.likeFilm(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void dislikeFilm(@PathVariable long id, @PathVariable long userId) {
+        service.dislikeFilm(id, userId);
+    }
+
+    @GetMapping("popular")
+    public Collection<Film> getTopN(@RequestParam Optional<Integer> count) {
+        if (count.isPresent()) {
+            return service.getTopN(count.get());
+        }
+        return service.getTopN();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleNotFound(final NotFoundException e) {
+        return Map.of(HttpStatus.NOT_FOUND.toString(), e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidationFail(final ValidationException e) {
+        return Map.of(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
     }
 }
