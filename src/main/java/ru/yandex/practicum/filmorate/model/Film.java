@@ -26,7 +26,7 @@ public class Film {
     private LocalDate releaseDate;
     @NotNull
     @Positive
-    private long duration;
+    private long d;
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
     @Builder.Default()

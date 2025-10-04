@@ -4,13 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@Component
+@Component("inMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
     private HashMap<Long, User> users = new HashMap<>();
     private static final Logger log = LoggerFactory.getLogger(InMemoryUserStorage.class);
@@ -26,16 +26,16 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User updateUser(User userForUpdate) {
-        if (Objects.isNull(userForUpdate.getId()) || !users.containsKey(userForUpdate.getId())) {
+    public User updateUser(User user) {
+        if (Objects.isNull(user.getId()) || !users.containsKey(user.getId())) {
             log.error("Пользователь не найден");
             throw new NotFoundException("Пользователь  не найден");
         }
 
-        User currentUser = users.get(userForUpdate.getId());
-        users.put(currentUser.getId(), userForUpdate);
+        User currentUser = users.get(user.getId());
+        users.put(currentUser.getId(), user);
 
-        return users.get(userForUpdate.getId());
+        return users.get(user.getId());
     }
 
     @Override
@@ -53,6 +53,62 @@ public class InMemoryUserStorage implements UserStorage {
         return users.get(id);
     }
 
+
+    public Collection<User> addFriend(User user, User friend) throws ValidationException {
+        if (user.getId() == friend.getId()) {
+            throw new ValidationException("cant be friend with self");
+        }
+        user.getFriends().add(friend.getId());
+        friend.getFriends().add(user.getId());
+
+        return List.of(user, friend);
+    }
+
+    @Override
+    public Collection<User> addFriend(long userId, long friendId) throws ValidationException {
+        User user = getUser(userId);
+        User friend = getUser(friendId);
+
+        return addFriend(user, friend);
+    }
+
+    public Collection<User> removeFriend(User user, User friend) throws ValidationException {
+        user.getFriends().remove(friend.getId());
+        friend.getFriends().remove(user.getId());
+
+        return List.of(user, friend);
+    }
+
+    public Collection<User> removeFriend(long userId, long friendId) throws ValidationException {
+        User user = getUser(userId);
+        User friend = getUser(friendId);
+
+        return removeFriend(user, friend);
+    }
+
+    public List<User> getUserFriends(User user) {
+        return getAllUsers().stream().filter(u -> user.getFriends().contains(u.getId())).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<User> getUserFriends(long userId) {
+        User user = getUser(userId);
+
+        return getUserFriends(user);
+    }
+    
+    public Collection<User> getCommonFriends(User user, User otherUser) {
+        Set<User> firstUserFriends = new HashSet<>(getUserFriends(user));
+        return getUserFriends(otherUser).stream().filter(firstUserFriends::contains).toList();
+    }
+
+    @Override
+    public Collection<User> getCommonFriends(long userId, long otherUserId) {
+        User user = getUser(userId);
+        User otherUser = getUser(otherUserId);
+
+        return getCommonFriends(user, otherUser);
+    }
 
     private long getNextId() {
         long currentMaxId = users.keySet()
