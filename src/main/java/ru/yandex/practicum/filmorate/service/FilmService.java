@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -18,34 +17,27 @@ public class FilmService {
     private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage) {
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
 
     public void likeFilm(long filmId, long userId) {
-        Film film = filmStorage.getFilm(filmId);
-        User user = userStorage.getUser(userId);
-
-        film.getLikes().add(user.getId());
+        userStorage.getUser(userId);
+        filmStorage.likeFilm(filmId, userId);
     }
 
     public void dislikeFilm(long filmId, long userId) {
-        Film film = filmStorage.getFilm(filmId);
-        User user = userStorage.getUser(userId);
-
-        film.getLikes().remove(userId);
+        userStorage.getUser(userId);
+        filmStorage.likeFilm(filmId, userId);
     }
 
     public Collection<Film> getTopN(int count) {
-        Collection<Film> films = filmStorage.getFilms();
-        return films.stream()
-                .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
-                .toList().subList(0, Math.min(films.size(), count));
+        return filmStorage.getTopN(count);
     }
 
     public Collection<Film> getTopN() {
-        return getTopN(10);
+        return filmStorage.getTopN();
     }
 
     public Film updateFilm(@Valid Film film) {

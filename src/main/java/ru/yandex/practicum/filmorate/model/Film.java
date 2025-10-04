@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.anotations.DateAfter;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -26,11 +27,13 @@ public class Film {
     private LocalDate releaseDate;
     @NotNull
     @Positive
-    private long d;
+    private long duration;
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
     @Builder.Default()
     private Set<Long> likes = new HashSet<>();
+    private long mpaId;
+    private List<Long> genreIdList;
 
     public Set<Long> getLikes() {
         if (Objects.isNull(likes)) {

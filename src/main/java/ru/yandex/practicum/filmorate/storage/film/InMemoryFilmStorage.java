@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 @Component
+@Qualifier("InMemoryFilmStorage")
 public class InMemoryFilmStorage implements FilmStorage {
     private HashMap<Long, Film> films = new HashMap<>();
     private static final Logger log = LoggerFactory.getLogger(InMemoryFilmStorage.class);
@@ -58,5 +60,30 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .max()
                 .orElse(0);
         return ++currentMaxId;
+    }
+
+    @Override
+    public void likeFilm(long filmId, long userId) {
+        Film film = getFilm(filmId);
+        film.getLikes().add(userId);
+    }
+
+    @Override
+    public void dislikeFilm(long filmId, long userId) {
+        Film film = getFilm(filmId);
+        film.getLikes().remove(userId);
+    }
+
+    @Override
+    public Collection<Film> getTopN(int count) {
+        Collection<Film> films = getFilms();
+        return films.stream()
+                .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
+                .toList().subList(0, Math.min(films.size(), count));
+    }
+
+    @Override
+    public Collection<Film> getTopN() {
+        return getTopN(10);
     }
 }

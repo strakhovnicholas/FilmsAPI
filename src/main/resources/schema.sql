@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS PUBLIC."film" (
 	name varchar NOT NULL,
 	description varchar,
 	release_date DATE NOT NULL,
-	duration INTEGER,
+	duration BIGINT,
 	mpa_id INTEGER,
 	CONSTRAINT film_pk PRIMARY KEY (ID),
 	CONSTRAINT MPA_MPA_ID_FK FOREIGN KEY (mpa_id) REFERENCES PUBLIC."mpa"(ID)
@@ -59,3 +59,21 @@ CREATE TABLE IF NOT EXISTS PUBLIC."user_film_like" (
 	CONSTRAINT USER_FILM_LIKE_FILM_FK FOREIGN KEY (FILM_ID) REFERENCES PUBLIC."film"(ID),
 	CONSTRAINT USER_FILM_LIKE_USER_FK FOREIGN KEY (USER_ID) REFERENCES PUBLIC."user"(ID)
 );
+
+
+MERGE INTO PUBLIC."mpa"
+  KEY(ID)
+VALUES (1, 'G'),
+  (2, 'PG'),
+  (3, 'PG-13'),
+  (4, 'R'),
+  (5, 'NC-17');
+
+MERGE INTO PUBLIC."genre"
+  KEY(ID)
+VALUES (1, 'Комедия'),
+  (2, 'Драма'),
+  (3, 'Мультфильм'),
+  (4,'Триллер'),
+  (5, 'Документальный'),
+  (6, 'Боевик');
