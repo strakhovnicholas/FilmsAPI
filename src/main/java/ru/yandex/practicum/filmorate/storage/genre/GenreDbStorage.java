@@ -31,4 +31,16 @@ public class GenreDbStorage implements GenreStorage {
         }
         return genre.get();
     }
+
+    @Override
+    public List<Genre> getFilmGenre(long id) {
+        return repository.getFilmGenre(id);
+    }
+
+    @Override
+    public void addFilmGenre(long film_id, long genre_id) {
+        repository.addFilmGenre(film_id, genre_id);
+    }
+
+
 }

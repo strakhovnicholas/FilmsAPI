@@ -48,26 +48,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        return null;
+        return filmRepository.updateFilm(film);
     }
 
     @Override
-    public void likeFilm(long filmId, long userId) {
-
-    }
-
-    @Override
-    public void dislikeFilm(long filmId, long userId) {
-
-    }
-
-    @Override
-    public Collection<Film> getTopN(int count) {
-        return List.of();
-    }
-
-    @Override
-    public Collection<Film> getTopN() {
-        return List.of();
+    public List<Film> getTopN(int count) {
+        return filmRepository.getTopN(count);
     }
 }

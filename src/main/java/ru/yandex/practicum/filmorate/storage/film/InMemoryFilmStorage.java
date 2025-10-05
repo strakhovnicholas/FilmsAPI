@@ -7,9 +7,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 @Component
 @Qualifier("InMemoryFilmStorage")
@@ -62,28 +60,26 @@ public class InMemoryFilmStorage implements FilmStorage {
         return ++currentMaxId;
     }
 
-    @Override
     public void likeFilm(long filmId, long userId) {
         Film film = getFilm(filmId);
         film.getLikes().add(userId);
     }
 
-    @Override
     public void dislikeFilm(long filmId, long userId) {
         Film film = getFilm(filmId);
         film.getLikes().remove(userId);
     }
 
+    public Set<Long> getFilmLikes(long filmId) {
+        Film film = getFilm(filmId);
+        return film.getLikes();
+    }
+
     @Override
-    public Collection<Film> getTopN(int count) {
+    public List<Film> getTopN(int count) {
         Collection<Film> films = getFilms();
         return films.stream()
                 .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
                 .toList().subList(0, Math.min(films.size(), count));
-    }
-
-    @Override
-    public Collection<Film> getTopN() {
-        return getTopN(10);
     }
 }

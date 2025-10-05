@@ -8,4 +8,8 @@ public interface GenreStorage {
     List<Genre> getAll();
 
     Genre getById(long id);
+
+    List<Genre> getFilmGenre(long id);
+
+    void addFilmGenre(long film_id, long genre_id);
 }
