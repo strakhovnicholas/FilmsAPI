@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dal.UserRepository;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -36,13 +35,8 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User getUser(long id) {
-        Optional<User> user = userRepository.findOne(id);
-        if (user.isEmpty()) {
-            throw new NotFoundException("Пользователь  не найден");
-        }
-
-        return user.get();
+    public Optional<User> getUser(long id) {
+        return userRepository.findOne(id);
     }
 
     @Override

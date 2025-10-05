@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -12,10 +13,7 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -73,7 +71,12 @@ public class FilmService {
     }
 
     public Film getFilm(long id) {
-        Film film = filmStorage.getFilm(id);
+        Optional<Film> foundFilm = filmStorage.getFilm(id);
+        if (foundFilm.isEmpty()) {
+            throw new NotFoundException("film wasn't found");
+        }
+        Film film = foundFilm.get();
+        
         film.setGenres(genreStorage.getFilmGenre(film.getId()));
         film.setMpa(mpaStorage.getById(film.getMpa().getId()));
         film.setLikes(filmLikeStorage.getFilmLikes(film.getId()));

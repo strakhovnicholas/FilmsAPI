@@ -44,13 +44,8 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUser(long id) {
-        if (!users.containsKey(id)) {
-            log.error("Пользователь не найден");
-            throw new NotFoundException("Пользователь  не найден");
-        }
-
-        return users.get(id);
+    public Optional<User> getUser(long id) {
+        return Optional.of(users.get(id));
     }
 
 
@@ -66,10 +61,14 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public Collection<User> addFriend(long userId, long friendId) throws ValidationException {
-        User user = getUser(userId);
-        User friend = getUser(friendId);
+        Optional<User> user = getUser(userId);
+        Optional<User> friend = getUser(friendId);
 
-        return addFriend(user, friend);
+        if (user.isEmpty() || friend.isEmpty()) {
+            throw new NotFoundException("Пользователь  не найден");
+        }
+
+        return addFriend(user.get(), friend.get());
     }
 
     public Collection<User> removeFriend(User user, User friend) throws ValidationException {
@@ -80,10 +79,16 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     public Collection<User> removeFriend(long userId, long friendId) throws ValidationException {
-        User user = getUser(userId);
-        User friend = getUser(friendId);
 
-        return removeFriend(user, friend);
+        Optional<User> user = getUser(userId);
+        Optional<User> friend = getUser(friendId);
+
+        if (user.isEmpty() || friend.isEmpty()) {
+            throw new NotFoundException("Пользователь  не найден");
+        }
+
+
+        return removeFriend(user.get(), friend.get());
     }
 
     public List<User> getUserFriends(User user) {
@@ -92,11 +97,16 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public List<User> getUserFriends(long userId) {
-        User user = getUser(userId);
 
-        return getUserFriends(user);
+        Optional<User> user = getUser(userId);
+
+        if (user.isEmpty()) {
+            throw new NotFoundException("Пользователь  не найден");
+        }
+
+        return getUserFriends(user.get());
     }
-    
+
     public Collection<User> getCommonFriends(User user, User otherUser) {
         Set<User> firstUserFriends = new HashSet<>(getUserFriends(user));
         return getUserFriends(otherUser).stream().filter(firstUserFriends::contains).toList();
@@ -104,10 +114,16 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public Collection<User> getCommonFriends(long userId, long otherUserId) {
-        User user = getUser(userId);
-        User otherUser = getUser(otherUserId);
 
-        return getCommonFriends(user, otherUser);
+        Optional<User> user = getUser(userId);
+        Optional<User> otherUser = getUser(otherUserId);
+
+        if (user.isEmpty() || otherUser.isEmpty()) {
+            throw new NotFoundException("Пользователь  не найден");
+        }
+
+
+        return getCommonFriends(user.get(), otherUser.get());
     }
 
     private long getNextId() {

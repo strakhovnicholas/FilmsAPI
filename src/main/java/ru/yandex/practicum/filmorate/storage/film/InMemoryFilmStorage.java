@@ -28,13 +28,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilm(long id) {
-        if (!films.containsKey(id)) {
-            log.error("Фильм не найден");
-            throw new NotFoundException("Фильм не найден");
-        }
-
-        return films.get(id);
+    public Optional<Film> getFilm(long id) {
+        return Optional.of(films.get(id));
     }
 
 
@@ -61,17 +56,29 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     public void likeFilm(long filmId, long userId) {
-        Film film = getFilm(filmId);
+        Optional<Film> foundFilm = getFilm(filmId);
+        if (foundFilm.isEmpty()) {
+            throw new NotFoundException("Not found");
+        }
+        Film film = foundFilm.get();
         film.getLikes().add(userId);
     }
 
     public void dislikeFilm(long filmId, long userId) {
-        Film film = getFilm(filmId);
+        Optional<Film> foundFilm = getFilm(filmId);
+        if (foundFilm.isEmpty()) {
+            throw new NotFoundException("Not found");
+        }
+        Film film = foundFilm.get();
         film.getLikes().remove(userId);
     }
 
     public Set<Long> getFilmLikes(long filmId) {
-        Film film = getFilm(filmId);
+        Optional<Film> foundFilm = getFilm(filmId);
+        if (foundFilm.isEmpty()) {
+            throw new NotFoundException("Not found");
+        }
+        Film film = foundFilm.get();
         return film.getLikes();
     }
 

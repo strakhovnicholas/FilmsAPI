@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dal.FilmRepository;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
@@ -38,12 +37,8 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilm(long id) {
-        Optional<Film> foundFilm = filmRepository.getFilm(id);
-        if (foundFilm.isEmpty()) {
-            throw new NotFoundException("film wasn't found");
-        }
-        return foundFilm.get();
+    public Optional<Film> getFilm(long id) {
+        return filmRepository.getFilm(id);
     }
 
     @Override
