@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dal.UserRepository;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -25,7 +26,12 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        this.getUser(user.getId());
+        Optional<User> savedUser = getUser(user.getId());
+
+        if (savedUser.isEmpty()) {
+            throw new NotFoundException("Пользователь  не найден");
+        }
+
         return userRepository.update(user);
     }
 
@@ -41,28 +47,47 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public Collection<User> addFriend(long userId, long friendId) {
-        getUser(userId);
-        getUser(friendId);
+        Optional<User> user = getUser(userId);
+        Optional<User> otherUser = getUser(friendId);
+
+        if (user.isEmpty() || otherUser.isEmpty()) {
+            throw new NotFoundException("Пользователь  не найден");
+        }
+
         return userRepository.addFriend(userId, friendId);
     }
 
     @Override
     public Collection<User> removeFriend(long userId, long friendId) {
-        getUser(userId);
-        getUser(friendId);
+        Optional<User> user = getUser(userId);
+        Optional<User> otherUser = getUser(friendId);
+
+        if (user.isEmpty() || otherUser.isEmpty()) {
+            throw new NotFoundException("Пользователь  не найден");
+        }
+
         return userRepository.removeFriend(userId, friendId);
     }
 
     @Override
     public List<User> getUserFriends(long userId) {
-        getUser(userId);
+        Optional<User> savedUser = getUser(userId);
+
+        if (savedUser.isEmpty()) {
+            throw new NotFoundException("Пользователь  не найден");
+        }
         return userRepository.getFriends(userId);
     }
 
     @Override
     public Collection<User> getCommonFriends(long userId, long otherUserId) {
-        getUser(userId);
-        getUser(otherUserId);
+        Optional<User> user = getUser(userId);
+        Optional<User> otherUser = getUser(otherUserId);
+
+        if (user.isEmpty() || otherUser.isEmpty()) {
+            throw new NotFoundException("Пользователь  не найден");
+        }
+
         return userRepository.getCommonFriends(userId, otherUserId);
     }
 }

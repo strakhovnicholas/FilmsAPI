@@ -76,7 +76,6 @@ public class FilmService {
             throw new NotFoundException("film wasn't found");
         }
         Film film = foundFilm.get();
-        
         film.setGenres(genreStorage.getFilmGenre(film.getId()));
         film.setMpa(mpaStorage.getById(film.getMpa().getId()));
         film.setLikes(filmLikeStorage.getFilmLikes(film.getId()));

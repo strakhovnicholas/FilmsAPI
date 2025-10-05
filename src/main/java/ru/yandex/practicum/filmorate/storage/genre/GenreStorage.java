@@ -11,5 +11,5 @@ public interface GenreStorage {
 
     List<Genre> getFilmGenre(long id);
 
-    void addFilmGenre(long film_id, long genre_id);
+    void addFilmGenre(long filmId, long genreId);
 }

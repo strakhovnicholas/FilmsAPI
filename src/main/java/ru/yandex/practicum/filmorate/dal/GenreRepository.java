@@ -39,7 +39,7 @@ public class GenreRepository extends BaseRepository<Genre> {
         return findMany(GET_FILM_GENRE, id);
     }
 
-    public void addFilmGenre(long film_id, long genre_id) {
-        insertNoKey(ADD_FILM_GENRE, film_id, genre_id);
+    public void addFilmGenre(long filmId, long genreId) {
+        insertNoKey(ADD_FILM_GENRE, filmId, genreId);
     }
 }

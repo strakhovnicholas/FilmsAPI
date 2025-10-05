@@ -38,8 +38,8 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
-    public void addFilmGenre(long film_id, long genre_id) {
-        repository.addFilmGenre(film_id, genre_id);
+    public void addFilmGenre(long filmId, long genreId) {
+        repository.addFilmGenre(filmId, genreId);
     }
 
 
