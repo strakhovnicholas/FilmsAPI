@@ -2,15 +2,15 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 @Component
+@Qualifier("InMemoryFilmStorage")
 public class InMemoryFilmStorage implements FilmStorage {
     private HashMap<Long, Film> films = new HashMap<>();
     private static final Logger log = LoggerFactory.getLogger(InMemoryFilmStorage.class);
@@ -28,13 +28,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilm(long id) {
-        if (!films.containsKey(id)) {
-            log.error("Фильм не найден");
-            throw new NotFoundException("Фильм не найден");
-        }
-
-        return films.get(id);
+    public Optional<Film> getFilm(long id) {
+        return Optional.of(films.get(id));
     }
 
 
@@ -58,5 +53,40 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .max()
                 .orElse(0);
         return ++currentMaxId;
+    }
+
+    public void likeFilm(long filmId, long userId) {
+        Optional<Film> foundFilm = getFilm(filmId);
+        if (foundFilm.isEmpty()) {
+            throw new NotFoundException("Not found");
+        }
+        Film film = foundFilm.get();
+        film.getLikes().add(userId);
+    }
+
+    public void dislikeFilm(long filmId, long userId) {
+        Optional<Film> foundFilm = getFilm(filmId);
+        if (foundFilm.isEmpty()) {
+            throw new NotFoundException("Not found");
+        }
+        Film film = foundFilm.get();
+        film.getLikes().remove(userId);
+    }
+
+    public Set<Long> getFilmLikes(long filmId) {
+        Optional<Film> foundFilm = getFilm(filmId);
+        if (foundFilm.isEmpty()) {
+            throw new NotFoundException("Not found");
+        }
+        Film film = foundFilm.get();
+        return film.getLikes();
+    }
+
+    @Override
+    public List<Film> getTopN(int count) {
+        Collection<Film> films = getFilms();
+        return films.stream()
+                .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
+                .toList().subList(0, Math.min(films.size(), count));
     }
 }

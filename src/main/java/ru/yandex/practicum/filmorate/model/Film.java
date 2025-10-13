@@ -4,11 +4,15 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
 import ru.yandex.practicum.filmorate.anotations.DateAfter;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -27,10 +31,11 @@ public class Film {
     @NotNull
     @Positive
     private long duration;
-    @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
     @Builder.Default()
     private Set<Long> likes = new HashSet<>();
+    private Mpa mpa;
+    private List<Genre> genres;
 
     public Set<Long> getLikes() {
         if (Objects.isNull(likes)) {
