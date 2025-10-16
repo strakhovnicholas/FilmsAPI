@@ -134,4 +134,12 @@ public class InMemoryUserStorage implements UserStorage {
                 .orElse(0);
         return ++currentMaxId;
     }
+
+    @Override
+    public void deleteUser(long id) {
+        if (!users.containsKey(id)) {
+            throw new NotFoundException("Пользователь не найден");
+        }
+        users.remove(id);
+    }
 }

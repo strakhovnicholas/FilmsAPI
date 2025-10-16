@@ -89,4 +89,12 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
                 .toList().subList(0, Math.min(films.size(), count));
     }
+
+    @Override
+    public void deleteFilm(long id) {
+        if (!films.containsKey(id)) {
+            throw new NotFoundException("Фильм не найден");
+        }
+        films.remove(id);
+    }
 }

@@ -30,6 +30,7 @@ public class FilmRepository extends BaseRepository<Film> {
             "ORDER BY lcnt.USER_LIKE_CNT  DESC\n" +
             ")\n" +
             "LIMIT ?\n";
+    private static final String DELETE_FILM_QUERY = "DELETE FROM PUBLIC.\"film\" WHERE id = ?";
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper, Film.class);
@@ -75,4 +76,7 @@ public class FilmRepository extends BaseRepository<Film> {
         return this.findMany(GET_TOP_N_QUERY, count);
     }
 
+    public void delete(long id) {
+        delete(DELETE_FILM_QUERY, id);
+    }
 }

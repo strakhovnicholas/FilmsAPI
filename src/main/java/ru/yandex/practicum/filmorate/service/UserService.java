@@ -45,4 +45,8 @@ public class UserService {
     public User updateUser(@Valid User user) {
         return storage.updateUser(user);
     }
+
+    public void deleteUser(long id) {
+        storage.deleteUser(id);
+    }
 }

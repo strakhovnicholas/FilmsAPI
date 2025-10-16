@@ -103,4 +103,8 @@ public class FilmService {
 
         return addedFilm;
     }
+
+    public void deleteFilm(long id) {
+        filmStorage.deleteFilm(id);
+    }
 }
