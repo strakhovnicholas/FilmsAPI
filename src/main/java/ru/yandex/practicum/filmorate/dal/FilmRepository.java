@@ -129,6 +129,8 @@ public class FilmRepository extends BaseRepository<Film> {
         return this.findMany(query, directorId);
     }
     public void delete(long id) {
-        delete(DELETE_FILM_QUERY, id);
+        delete("DELETE FROM PUBLIC.\"user_film_like\" WHERE film_id = ?", id);
+        delete("DELETE FROM PUBLIC.\"film_genre\" WHERE film_id = ?", id);
+        delete("DELETE FROM PUBLIC.\"film\" WHERE id = ?", id);
     }
 }
