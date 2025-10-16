@@ -101,7 +101,7 @@ public class InMemoryUserStorage implements UserStorage {
         Optional<User> user = getUser(userId);
 
         if (user.isEmpty()) {
-            throw new NotFoundException("Пользователь  не найден");
+            return List.of();
         }
 
         return getUserFriends(user.get());

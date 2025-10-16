@@ -40,7 +40,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Optional<Film> getFilm(long id) {
-        return filmRepository.getFilm(id);
+        Optional<Film> film = filmRepository.getFilm(id);
+        if (film.isEmpty()) {
+            throw new NotFoundException("film wasn't found");
+        }
+        return film;
     }
 
     @Override
