@@ -64,6 +64,11 @@ public class UserController {
         service.deleteUser(id);
     }
 
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable long id) {
+        return service.getUserById(id);
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFound(final NotFoundException e) {
