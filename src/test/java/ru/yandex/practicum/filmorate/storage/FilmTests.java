@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -21,8 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @JdbcTest
@@ -256,7 +256,6 @@ public class FilmTests {
 
         filmDbStorage.deleteFilm(savedFilm.getId());
 
-        Optional<Film> afterDelete = filmDbStorage.getFilm(savedFilm.getId());
-        assertTrue(afterDelete.isEmpty());
+        assertThrows(NotFoundException.class, () -> filmDbStorage.getFilm(savedFilm.getId()));
     }
 }
