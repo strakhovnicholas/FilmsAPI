@@ -59,7 +59,7 @@ public class UserController {
         return service.getCommonFriends(id, otherId);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable long id) {
         service.deleteUser(id);
     }
