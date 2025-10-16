@@ -251,5 +251,23 @@ public class FilmTests {
         assertTrue(filmGenre.stream().filter(g -> g.getId() == 2).findFirst().get().getId() == 2);
     }
 
+    @Test
+    void deleteFilmById() {
+        Film film = Film.builder()
+                .name("To Delete")
+                .description("desc")
+                .releaseDate(LocalDate.of(2000, 1, 1))
+                .duration(100)
+                .mpa(Mpa.builder().id(1).build())
+                .build();
 
+        Film savedFilm = filmDbStorage.addFilm(film);
+        Optional<Film> beforeDelete = filmDbStorage.getFilm(savedFilm.getId());
+        assertTrue(beforeDelete.isPresent());
+
+        filmDbStorage.deleteFilm(savedFilm.getId());
+
+        Optional<Film> afterDelete = filmDbStorage.getFilm(savedFilm.getId());
+        assertTrue(afterDelete.isEmpty());
+    }
 }

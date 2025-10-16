@@ -47,6 +47,7 @@ public class FilmRepository extends BaseRepository<Film> {
             ") films \n";
 
     private static final String GET_TOP_N_QUERY_LIMIT = GET_TOP_N_QUERY_BASE + " LIMIT ?\n";
+    private static final String DELETE_FILM_QUERY = "DELETE FROM PUBLIC.\"film\" WHERE id = ?";
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper, Film.class);
@@ -126,5 +127,8 @@ public class FilmRepository extends BaseRepository<Film> {
             query += ORDER_BY_LIKES;
         }
         return this.findMany(query, directorId);
+    }
+    public void delete(long id) {
+        delete(DELETE_FILM_QUERY, id);
     }
 }

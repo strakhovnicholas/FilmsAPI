@@ -39,6 +39,7 @@ public class UserRepository extends BaseRepository<User> {
             "FROM PUBLIC.\"user_friend\" uf \n" +
             "WHERE uf.USER_ID = ? AND uf.IS_ACCEPTED = TRUE\n" +
             ")";
+    private static final String DELETE_USER_QUERY = "DELETE FROM PUBLIC.\"user\" WHERE id = ?";
 
     public UserRepository(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper, User.class);
@@ -94,5 +95,9 @@ public class UserRepository extends BaseRepository<User> {
 
     public Collection<User> getCommonFriends(long userId, long friendId) {
         return findMany(GET_COMMON_FRIENDS, userId, friendId);
+    }
+
+    public void delete(long id) {
+        delete(DELETE_USER_QUERY, id);
     }
 }

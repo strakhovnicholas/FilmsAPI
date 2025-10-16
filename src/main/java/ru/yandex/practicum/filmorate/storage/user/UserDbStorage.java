@@ -90,4 +90,13 @@ public class UserDbStorage implements UserStorage {
 
         return userRepository.getCommonFriends(userId, otherUserId);
     }
+
+    @Override
+    public void deleteUser(long id) {
+        Optional<User> user = getUser(id);
+        if (user.isEmpty()) {
+            throw new NotFoundException("Пользователь не найден");
+        }
+        userRepository.delete(id);
+    }
 }
