@@ -30,7 +30,6 @@ public class FilmRepository extends BaseRepository<Film> {
             "ORDER BY lcnt.USER_LIKE_CNT  DESC\n" +
             ")\n" +
             "LIMIT ?\n";
-    private static final String DELETE_FILM_QUERY = "DELETE FROM PUBLIC.\"film\" WHERE id = ?";
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper, Film.class);
@@ -77,6 +76,8 @@ public class FilmRepository extends BaseRepository<Film> {
     }
 
     public void delete(long id) {
-        delete(DELETE_FILM_QUERY, id);
+        delete("DELETE FROM PUBLIC.\"user_film_like\" WHERE film_id = ?", id);
+        delete("DELETE FROM PUBLIC.\"film_genre\" WHERE film_id = ?", id);
+        delete("DELETE FROM PUBLIC.\"film\" WHERE id = ?", id);
     }
 }
