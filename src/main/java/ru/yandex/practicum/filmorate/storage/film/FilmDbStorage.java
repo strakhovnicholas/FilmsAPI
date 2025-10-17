@@ -47,7 +47,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getTopN(int count) {
-        return filmRepository.getTopN(count);
+    public List<Film> getTopN(int count, int genreId, int year) {
+        return filmRepository.getTopN(count, genreId, year);
     }
 }

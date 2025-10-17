@@ -43,4 +43,9 @@ public class Film {
         }
         return likes;
     }
+
+    public void addGenre(Genre genre) {
+        genres.add(genre);
+    }
+
 }

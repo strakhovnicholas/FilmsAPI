@@ -54,11 +54,8 @@ public class FilmController {
     }
 
     @GetMapping("popular")
-    public Collection<Film> getTopN(@RequestParam Optional<Integer> count) {
-        if (count.isPresent()) {
-            return service.getTopN(count.get());
-        }
-        return service.getTopN();
+    public Collection<Film> getTopN(@RequestParam Optional<Integer> count, @RequestParam Optional<Integer> genreId, @RequestParam Optional<Integer> year) {
+        return service.getTopN(count.orElse(-1), genreId.orElse(-1), year.orElse(-1));
     }
 
     @ExceptionHandler

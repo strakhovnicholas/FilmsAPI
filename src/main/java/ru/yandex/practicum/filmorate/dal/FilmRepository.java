@@ -19,17 +19,23 @@ public class FilmRepository extends BaseRepository<Film> {
     private static final String UPDATE_FILM_QUERY = "UPDATE PUBLIC.\"film\"\n" +
             "SET NAME=?, DESCRIPTION=?, RELEASE_DATE=?, DURATION=?, MPA_ID=?\n" +
             "WHERE ID=?;";
-    private static final String GET_TOP_N_QUERY = "SELECT *\n" +
+    private static final String GET_TOP_N_QUERY_BASE = "SELECT *\n" +
             "FROM (\n" +
-            "SELECT f.id,f.name,f.description,f.RELEASE_DATE,f.DURATION ,f.MPA_ID\n" +
+            "SELECT f.id,f.name,f.description,f.RELEASE_DATE,f.DURATION ,f.MPA_ID,\n" +
+            "m.name AS mpa_name, g.id AS genre_id, g.name AS genre_name\n"+
             "FROM PUBLIC.\"film\" f LEFT JOIN (\n" +
             "SELECT film_id,count(user_id) AS user_like_cnt\n" +
             "FROM PUBLIC.\"user_film_like\"\n" +
             "GROUP BY film_id\n" +
             ") lcnt ON f.id = lcnt.film_id \n" +
+            "LEFT JOIN PUBLIC.\"film_genre\" AS fg ON fg.film_id=f.id \n" +
+            "LEFT JOIN PUBLIC.\"mpa\" AS m ON f.mpa_id = m.id \n" +
+            "LEFT JOIN PUBLIC.\"genre\" AS g ON fg.genre_id = g.id \n" +
+            "WHERE (EXTRACT(YEAR FROM release_date) = ? OR ?)  AND (fg.genre_id = ?  OR ?) \n" +
             "ORDER BY lcnt.USER_LIKE_CNT  DESC\n" +
-            ")\n" +
-            "LIMIT ?\n";
+            ")\n";
+
+    private static final String GET_TOP_N_QUERY_LIMIT = GET_TOP_N_QUERY_BASE + " LIMIT ?\n";
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper, Film.class);
@@ -71,8 +77,16 @@ public class FilmRepository extends BaseRepository<Film> {
         return optionalFilm.get();
     }
 
-    public List<Film> getTopN(int count) {
-        return this.findMany(GET_TOP_N_QUERY, count);
+    public List<Film> getTopN(int count, int genreId, int year) {
+        boolean allYear = year < 0;
+        boolean allGenre = genreId < 0;
+
+        if(count>0) {
+            return this.findMany(GET_TOP_N_QUERY_LIMIT, year, allYear, genreId, allGenre, count);
+        }else{
+            return this.findMany(GET_TOP_N_QUERY_BASE, year, allYear, genreId, allGenre);
+        }
+
     }
 
 }
