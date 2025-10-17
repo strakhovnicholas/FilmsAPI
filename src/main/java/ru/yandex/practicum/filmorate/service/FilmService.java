@@ -50,13 +50,6 @@ public class FilmService {
 
     public Collection<Film> getTopN(int count, int genreId, int year) {
         return filmStorage.getTopN(count, genreId, year);
-        //List<Film> films = filmStorage.getTopN(count, genreId, year);
-        //for (Film film : films) {
-        //    film.setGenres(genreStorage.getFilmGenre(film.getId()));
-        //    film.setMpa(mpaStorage.getById(film.getMpa().getId()));
-        //    film.setLikes(filmLikeStorage.getFilmLikes(film.getId()));
-        //}
-        //return films;
     }
 
     public Film updateFilm(@Valid Film film) {

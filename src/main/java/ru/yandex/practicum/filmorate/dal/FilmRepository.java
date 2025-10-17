@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.dal;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dal.extractors.FilmWithItemsExtractor;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -19,9 +20,18 @@ public class FilmRepository extends BaseRepository<Film> {
     private static final String UPDATE_FILM_QUERY = "UPDATE PUBLIC.\"film\"\n" +
             "SET NAME=?, DESCRIPTION=?, RELEASE_DATE=?, DURATION=?, MPA_ID=?\n" +
             "WHERE ID=?;";
-    private static final String GET_TOP_N_QUERY_BASE = "SELECT *\n" +
+    private static final String GET_TOP_N_QUERY_BASE = "SELECT \n" +
+            "films.id AS film_id, \n" +
+            "films.name, \n" +
+            "films.description, \n" +
+            "films.releaseDate, \n" +
+            "films.duration, \n" +
+            "films.mpa_id, \n" +
+            "films.mpa_name, \n" +
+            "films.genre_id, \n" +
+            "films.genre_name \n" +
             "FROM (\n" +
-            "SELECT f.id,f.name,f.description,f.RELEASE_DATE,f.DURATION ,f.MPA_ID,\n" +
+            "SELECT f.id,f.name,f.description,f.RELEASE_DATE AS releaseDate,f.DURATION ,f.MPA_ID,\n" +
             "m.name AS mpa_name, g.id AS genre_id, g.name AS genre_name\n" +
             "FROM PUBLIC.\"film\" f LEFT JOIN (\n" +
             "SELECT film_id,count(user_id) AS user_like_cnt\n" +
@@ -33,7 +43,7 @@ public class FilmRepository extends BaseRepository<Film> {
             "LEFT JOIN PUBLIC.\"genre\" AS g ON fg.genre_id = g.id \n" +
             "WHERE (EXTRACT(YEAR FROM release_date) = ? OR ?)  AND (fg.genre_id = ?  OR ?) \n" +
             "ORDER BY lcnt.USER_LIKE_CNT  DESC\n" +
-            ")\n";
+            ") films \n";
 
     private static final String GET_TOP_N_QUERY_LIMIT = GET_TOP_N_QUERY_BASE + " LIMIT ?\n";
 
@@ -82,9 +92,9 @@ public class FilmRepository extends BaseRepository<Film> {
         boolean allGenre = genreId < 0;
 
         if (count > 0) {
-            return this.findMany(GET_TOP_N_QUERY_LIMIT, year, allYear, genreId, allGenre, count);
+            return this.findManyExtract(GET_TOP_N_QUERY_LIMIT, new FilmWithItemsExtractor(),year, allYear, genreId, allGenre, count);
         } else {
-            return this.findMany(GET_TOP_N_QUERY_BASE, year, allYear, genreId, allGenre);
+            return this.findManyExtract(GET_TOP_N_QUERY_BASE, new FilmWithItemsExtractor(),year, allYear, genreId, allGenre);
         }
 
     }
