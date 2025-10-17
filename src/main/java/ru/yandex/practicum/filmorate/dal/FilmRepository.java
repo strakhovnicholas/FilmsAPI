@@ -22,7 +22,7 @@ public class FilmRepository extends BaseRepository<Film> {
     private static final String GET_TOP_N_QUERY_BASE = "SELECT *\n" +
             "FROM (\n" +
             "SELECT f.id,f.name,f.description,f.RELEASE_DATE,f.DURATION ,f.MPA_ID,\n" +
-            "m.name AS mpa_name, g.id AS genre_id, g.name AS genre_name\n"+
+            "m.name AS mpa_name, g.id AS genre_id, g.name AS genre_name\n" +
             "FROM PUBLIC.\"film\" f LEFT JOIN (\n" +
             "SELECT film_id,count(user_id) AS user_like_cnt\n" +
             "FROM PUBLIC.\"user_film_like\"\n" +
@@ -81,9 +81,9 @@ public class FilmRepository extends BaseRepository<Film> {
         boolean allYear = year < 0;
         boolean allGenre = genreId < 0;
 
-        if(count>0) {
+        if (count > 0) {
             return this.findMany(GET_TOP_N_QUERY_LIMIT, year, allYear, genreId, allGenre, count);
-        }else{
+        } else {
             return this.findMany(GET_TOP_N_QUERY_BASE, year, allYear, genreId, allGenre);
         }
 
