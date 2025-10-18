@@ -58,6 +58,10 @@ public class FilmService {
         return films;
     }
 
+    public Collection<Film> getFilmsByIds(Collection<Long> ids) {
+        return this.filmStorage.getFilmsByIds(ids);
+    }
+
     public Collection<Film> getTopN() {
         return filmStorage.getTopN(10);
     }
@@ -99,7 +103,6 @@ public class FilmService {
 
             addedFilm.setGenres(genreStorage.getFilmGenre(addedFilm.getId()));
         }
-
 
         return addedFilm;
     }

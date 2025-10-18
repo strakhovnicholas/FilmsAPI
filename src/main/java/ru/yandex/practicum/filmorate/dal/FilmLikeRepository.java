@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.FilmLike;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,16 @@ public class FilmLikeRepository extends BaseRepository<FilmLike> {
             "SELECT film_id,user_id\n" +
             "FROM PUBLIC.\"user_film_like\" ufl \n" +
             "WHERE ufl.FILM_ID = ?";
+    private static final String GET_USER_WITH_SAME_FILM_LIKES = "SELECT *\n" +
+            "FROM PUBLIC.\"user_film_like\"\n" +
+            "WHERE user_id IN (\n" +
+            "SELECT user_id\n" +
+            "FROM PUBLIC.\"user_film_like\"\n" +
+            "WHERE film_id IN (\n" +
+            "SELECT FILM_ID\n" +
+            "FROM PUBLIC.\"user_film_like\"\n" +
+            "WHERE user_id = ?)\n" +
+            ")";
 
     public FilmLikeRepository(JdbcTemplate jdbc, RowMapper<FilmLike> mapper) {
         super(jdbc, mapper, FilmLike.class);
@@ -35,5 +46,9 @@ public class FilmLikeRepository extends BaseRepository<FilmLike> {
 
     public Set<Long> getFilmLikes(long filmId) {
         return this.findMany(GET_FILM_LIKES, filmId).stream().map(FilmLike::getUserId).collect(Collectors.toSet());
+    }
+
+    public Collection<FilmLike> getUsersWithSameFilmLikes(long userId) {
+        return this.findMany(GET_USER_WITH_SAME_FILM_LIKES, userId);
     }
 }

@@ -50,4 +50,9 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> getTopN(int count) {
         return filmRepository.getTopN(count);
     }
+
+    @Override
+    public List<Film> getFilmsByIds(Collection<Long> ids) {
+        return filmRepository.getFilmsByIds(ids);
+    }
 }

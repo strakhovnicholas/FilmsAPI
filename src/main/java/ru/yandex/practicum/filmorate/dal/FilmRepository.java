@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,6 +70,16 @@ public class FilmRepository extends BaseRepository<Film> {
             throw new InternalServerException("failed to create film");
         }
         return optionalFilm.get();
+    }
+
+    public List<Film> getFilmsByIds(Collection<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+
+        String placeholders = String.join(",", ids.stream().map(id -> "?").toList());
+        String sql = "SELECT * FROM PUBLIC.\"film\" WHERE id IN (" + placeholders + ")";
+        return findMany(sql, ids.toArray());
     }
 
     public List<Film> getTopN(int count) {

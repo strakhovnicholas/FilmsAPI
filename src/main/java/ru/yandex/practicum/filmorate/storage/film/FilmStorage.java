@@ -16,4 +16,6 @@ public interface FilmStorage {
     Film updateFilm(Film film);
 
     List<Film> getTopN(int count);
+
+    public List<Film> getFilmsByIds(Collection<Long> ids);
 }
