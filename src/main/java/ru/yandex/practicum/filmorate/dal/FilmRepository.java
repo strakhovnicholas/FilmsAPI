@@ -98,7 +98,7 @@ public class FilmRepository extends BaseRepository<Film> {
         String query = BASE_FILM_DIRECTOR_QUERY;
         if (sortBy == DirectorFilmSortValues.year) {
             query += ORDER_BY_YEAR;
-        } else if (sortBy == DirectorFilmSortValues.like) {
+        } else if (sortBy == DirectorFilmSortValues.likes) {
             query += ORDER_BY_LIKES;
         }
         return this.findMany(query, directorId);
