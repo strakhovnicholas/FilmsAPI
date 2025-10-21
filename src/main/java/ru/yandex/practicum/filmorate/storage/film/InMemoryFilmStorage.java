@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.util.DirectorFilmSortValues;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -96,5 +97,10 @@ public class InMemoryFilmStorage implements FilmStorage {
         Set<Long> idSet = new HashSet<>(ids);
 
         return films.values().stream().filter((film -> idSet.contains(film.getId()))).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Film> getDirectorFilms(Long directorId, DirectorFilmSortValues sortBy) {
+        return List.of();
     }
 }
