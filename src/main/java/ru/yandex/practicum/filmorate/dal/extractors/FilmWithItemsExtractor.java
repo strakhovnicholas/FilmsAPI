@@ -75,7 +75,7 @@ public class FilmWithItemsExtractor implements ResultSetExtractor<List<Film>> {
         }
     }
 
-    private String getStringOrNull(ResultSet rs, String columnLabel){
+    private String getStringOrNull(ResultSet rs, String columnLabel) {
         try {
             String value = rs.getString(columnLabel);
             return rs.wasNull() ? null : value;
