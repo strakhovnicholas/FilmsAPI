@@ -52,7 +52,7 @@ public class FilmWithItemsExtractor implements ResultSetExtractor<List<Film>> {
                 currentFilm.addGenre(genre);
             }
 
-            if (hasDirector(rs)){
+            if (hasDirector(rs)) {
                 Long directorId = getLongOrNull(rs, "director_id");
                 if (directorId != null) {
                     String directorName = rs.getString("director_name");
@@ -74,7 +74,7 @@ public class FilmWithItemsExtractor implements ResultSetExtractor<List<Film>> {
         return rs.wasNull() ? null : val;
     }
 
-    private boolean hasDirector (ResultSet rs) throws SQLException {
+    private boolean hasDirector(ResultSet rs) throws SQLException {
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
         for (int i = 1; i <= columnCount; i++) {
