@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.util.DirectorFilmSortValues;
 
 import java.util.Collection;
 import java.util.Map;
@@ -54,11 +55,13 @@ public class FilmController {
     }
 
     @GetMapping("popular")
-    public Collection<Film> getTopN(@RequestParam Optional<Integer> count) {
-        if (count.isPresent()) {
-            return service.getTopN(count.get());
-        }
-        return service.getTopN();
+    public Collection<Film> getTopN(@RequestParam Optional<Integer> count, @RequestParam Optional<Integer> genreId, @RequestParam Optional<Integer> year) {
+        return service.getTopN(count.orElse(-1), genreId.orElse(-1), year.orElse(-1));
+    }
+
+    @GetMapping("/director/{directorId}")
+    public Collection<Film> getFilmsByDirector(@PathVariable long directorId, @RequestParam DirectorFilmSortValues sortBy) {
+        return service.getDirectorsFilm(directorId, sortBy);
     }
 
     @ExceptionHandler
