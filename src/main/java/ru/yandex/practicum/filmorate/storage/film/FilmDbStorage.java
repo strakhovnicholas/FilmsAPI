@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.util.DirectorFilmSortValues;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +22,6 @@ public class FilmDbStorage implements FilmStorage {
     public FilmDbStorage(FilmRepository filmRepository) {
         this.filmRepository = filmRepository;
     }
-
 
     @Override
     public Film addFilm(Film film) {
@@ -52,7 +52,12 @@ public class FilmDbStorage implements FilmStorage {
         return filmRepository.getTopN(count, genreId, year);
     }
 
+    @Override
     public List<Film> getDirectorFilms(Long directorId, DirectorFilmSortValues sortBy) {
-        return filmRepository.getDirectorFilms(directorId, sortBy);
+        return List.of();
+    }
+
+    public List<Film> searchFilmsByDirectorOrTitleViaSubstring(String querySubstring, List<String> by) {
+        return this.filmRepository.searchFilmsByDirectorOrTitleViaSubstring(querySubstring,by);
     }
 }
