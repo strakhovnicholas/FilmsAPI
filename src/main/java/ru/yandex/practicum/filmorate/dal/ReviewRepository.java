@@ -13,20 +13,44 @@ import java.util.Optional;
 public class ReviewRepository extends BaseRepository<Review> {
 
     private static final String GET_ALL_QUERY = """
-            SELECT * FROM PUBLIC.\"review\"
+            SELECT * FROM (
+            SELECT review_id,content,is_positive,user_id,film_id,
+            COALESCE((
+            SELECT SUM(CASE
+                    WHEN rl.IS_POSITIVE THEN 1
+                    ELSE -1
+                END) AS useful
+            FROM PUBLIC."review_like" rl
+            WHERE REVIEW_ID = r.review_id
+            GROUP BY rl.REVIEW_ID
+            ),0) AS useful
+            FROM PUBLIC."review" r
+            )
             WHERE film_id = ?
             ORDER BY useful DESC
             LIMIT ?
             """;
 
     private static final String GET_ONE_QUERY = """
-            SELECT * FROM PUBLIC.\"review\"
+             SELECT * FROM (
+                        SELECT review_id,content,is_positive,user_id,film_id,
+                        COALESCE((
+                        SELECT SUM(CASE
+                                WHEN rl.IS_POSITIVE THEN 1
+                                ELSE -1
+                            END) AS useful
+                        FROM PUBLIC."review_like" rl
+                        WHERE REVIEW_ID = r.review_id
+                        GROUP BY rl.REVIEW_ID
+                        ),0) AS useful
+                        FROM PUBLIC."review" r
+                        )
             WHERE review_id = ?
             """;
 
     private static final String ADD_QUERY = """
-            INSERT INTO PUBLIC.\"review\" (content, is_positive, user_id, film_id, useful)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO PUBLIC.\"review\" (content, is_positive, user_id, film_id)
+            VALUES (?, ?, ?, ?)
             """;
 
     private static final String UPDATE_QUERY = """
@@ -37,12 +61,6 @@ public class ReviewRepository extends BaseRepository<Review> {
 
     private static final String DELETE_QUERY = """
             DELETE FROM PUBLIC.\"review\"
-            WHERE review_id = ?
-            """;
-
-    private static final String UPDATE_USEFULNESS_QUERY = """
-            UPDATE PUBLIC.\"review\"
-            SET useful = useful + ?
             WHERE review_id = ?
             """;
 
@@ -65,6 +83,11 @@ public class ReviewRepository extends BaseRepository<Review> {
             SELECT is_positive FROM PUBLIC.\"review_like\"
             WHERE review_id = ? AND user_id = ?
             """;
+    private static final String UPDATE_LIKE_QUERY = """
+            UPDATE PUBLIC."review_like"
+            SET IS_POSITIVE=?
+            WHERE REVIEW_ID=? AND USER_ID=?;
+            """;
 
     public ReviewRepository(JdbcTemplate jdbc, RowMapper<Review> mapper) {
         super(jdbc, mapper, Review.class);
@@ -79,7 +102,7 @@ public class ReviewRepository extends BaseRepository<Review> {
     }
 
     public Optional<Review> create(Review review) {
-        long id = insert(ADD_QUERY, review.getContent(), review.getIsPositive(), review.getUserId(), review.getFilmId(), review.getUseful());
+        long id = insert(ADD_QUERY, review.getContent(), review.getIsPositive(), review.getUserId(), review.getFilmId());
         return findById(id);
     }
 
@@ -92,20 +115,17 @@ public class ReviewRepository extends BaseRepository<Review> {
         update(DELETE_QUERY, id);
     }
 
-    public void updateUseful(Long reviewId, int delta) {
-        update(UPDATE_USEFULNESS_QUERY, delta, reviewId);
-    }
-
     public boolean hasUserVoted(Long reviewId, Long userId) {
         Integer count = jdbc.queryForObject(CHECK_LIKE_EXISTS, Integer.class, reviewId, userId);
         return count != null && count > 0;
     }
 
     public void addVote(Long reviewId, Long userId, boolean isPositive) {
-        if (hasUserVoted(reviewId, userId)) return;
-
+        if (hasUserVoted(reviewId, userId)) {
+            update(UPDATE_LIKE_QUERY, isPositive, reviewId, userId);
+            return;
+        }
         update(INSERT_LIKE, reviewId, userId, isPositive);
-        updateUseful(reviewId, isPositive ? +1 : -1);
     }
 
     public void removeVote(Long reviewId, Long userId) {
@@ -117,6 +137,5 @@ public class ReviewRepository extends BaseRepository<Review> {
         if (isPositive == null) return;
 
         update(DELETE_LIKE, reviewId, userId);
-        updateUseful(reviewId, isPositive ? -1 : +1);
     }
 }
