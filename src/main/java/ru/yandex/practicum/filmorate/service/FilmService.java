@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.filmDirector.FilmDirectorStorage;
 import ru.yandex.practicum.filmorate.storage.filmLike.FilmLikeStorage;
@@ -112,7 +113,7 @@ public class FilmService {
             Set<Long> directorIds = film.getDirectors().stream().map(Director::getId).collect(Collectors.toSet());
             for (long id : directorIds) {
                 directorStorage.getDirector(id);
-                filmDirectorStorage.addDirector(film.getId(), id);
+                filmDirectorStorage.addDirector(addedFilm.getId(), id);
             }
         }
 
@@ -127,5 +128,9 @@ public class FilmService {
         });
 
         return films;
+    }
+
+    public List<Film> searchFilmsByDirectorOrTitleViaSubstring(String querySubstring, List<String> by) {
+        return this.filmStorage.searchFilmsByDirectorOrTitleViaSubstring(querySubstring, by);
     }
 }
