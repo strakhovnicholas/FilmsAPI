@@ -66,13 +66,21 @@ public class FilmWithItemsExtractor implements ResultSetExtractor<List<Film>> {
         return films;
     }
 
-    private Long getLongOrNull(ResultSet rs, String column) throws SQLException {
-        long val = rs.getLong(column);
-        return rs.wasNull() ? null : val;
+    private Long getLongOrNull(ResultSet rs, String column) {
+        try {
+            long val = rs.getLong(column);
+            return rs.wasNull() ? null : val;
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
-    private String getStringOrNull(ResultSet rs, String columnLabel) throws SQLException {
-        String value = rs.getString(columnLabel);
-        return rs.wasNull() ? null : value;
+    private String getStringOrNull(ResultSet rs, String columnLabel){
+        try {
+            String value = rs.getString(columnLabel);
+            return rs.wasNull() ? null : value;
+        } catch (SQLException e) {
+            return null;
+        }
     }
 }
