@@ -51,9 +51,8 @@ public class FilmDbStorage implements FilmStorage {
         return filmRepository.getTopN(count, genreId, year);
     }
 
-    @Override
     public List<Film> getDirectorFilms(Long directorId, DirectorFilmSortValues sortBy) {
-        return List.of();
+        return filmRepository.getDirectorFilms(directorId, sortBy);
     }
 
     public List<Film> searchFilmsByDirectorOrTitleViaSubstring(String querySubstring, List<String> by) {
