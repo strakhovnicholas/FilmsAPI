@@ -19,4 +19,6 @@ public interface FilmStorage {
     List<Film> getTopN(int count, int genreId, int year);
 
     List<Film> getDirectorFilms(Long directorId, DirectorFilmSortValues sortBy);
+
+    List<Film> searchFilmsByDirectorOrTitleViaSubstring(String querySubstring, List<String> by);
 }
