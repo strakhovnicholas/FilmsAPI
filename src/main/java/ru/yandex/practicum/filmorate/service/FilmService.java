@@ -110,10 +110,16 @@ public class FilmService {
 
         if (!Objects.isNull(film.getDirectors())) {
             Set<Long> directorIds = film.getDirectors().stream().map(Director::getId).collect(Collectors.toSet());
+            Set<Director> directors = new HashSet<>();
             for (long id : directorIds) {
-                directorStorage.getDirector(id);
+                Optional<Director> director = directorStorage.getDirector(id);
+                if (director.isEmpty()) {
+                    throw new NotFoundException("no director");
+                }
+                directors.add(director.get());
                 filmDirectorStorage.addDirector(addedFilm.getId(), id);
             }
+            addedFilm.setDirectors(directors);
         }
 
         return addedFilm;
