@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -51,12 +52,14 @@ public class FilmWithItemsExtractor implements ResultSetExtractor<List<Film>> {
                 currentFilm.addGenre(genre);
             }
 
-            Long directorId = getLongOrNull(rs, "director_id");
-            if (directorId != null) {
-                String directorName = rs.getString("director_name");
-                Director director = Director.builder().id(directorId).name(directorName).build();
-                if (!currentFilm.getDirectors().contains(director)) {
-                    currentFilm.getDirectors().add(director);
+            if (hasDirector(rs)){
+                Long directorId = getLongOrNull(rs, "director_id");
+                if (directorId != null) {
+                    String directorName = rs.getString("director_name");
+                    Director director = Director.builder().id(directorId).name(directorName).build();
+                    if (!currentFilm.getDirectors().contains(director)) {
+                        currentFilm.getDirectors().add(director);
+                    }
                 }
             }
         }
@@ -69,5 +72,16 @@ public class FilmWithItemsExtractor implements ResultSetExtractor<List<Film>> {
     private Long getLongOrNull(ResultSet rs, String column) throws SQLException {
         long val = rs.getLong(column);
         return rs.wasNull() ? null : val;
+    }
+
+    private boolean hasDirector (ResultSet rs) throws SQLException {
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        for (int i = 1; i <= columnCount; i++) {
+            if ("director_id".equalsIgnoreCase(metaData.getColumnName(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 }
