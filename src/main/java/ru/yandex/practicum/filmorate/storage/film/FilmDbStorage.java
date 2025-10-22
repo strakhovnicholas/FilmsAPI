@@ -69,4 +69,13 @@ public class FilmDbStorage implements FilmStorage {
         }
         filmRepository.delete(id);
     }
+
+    @Override
+    public void deleteFilm(long id) {
+        Optional<Film> film = filmRepository.getFilm(id);
+        if (film.isEmpty()) {
+            throw new NotFoundException("film wasn't found");
+        }
+        filmRepository.delete(id);
+    }
 }
