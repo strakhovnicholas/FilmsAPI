@@ -86,7 +86,7 @@ public class FilmRepository extends BaseRepository<Film> {
                     "ORDER BY COALESCE(uf.likes_count, 0) DESC";
 
     private static final String SEARCH_FILMS_BY_DIRECTOR_OR_TITLE =
-            "SELECT DISTINCT " +
+            "SELECT " +
                     "f.id AS film_id, " +
                     "f.name, " +
                     "f.description, " +
@@ -113,7 +113,7 @@ public class FilmRepository extends BaseRepository<Film> {
                     ") " +
                     "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.mpa_id, " +
                     "m.name, g.id, g.name, d.id, d.name " +
-                    "ORDER BY calculated_likes_count DESC, f.id ASC";
+                    "ORDER BY calculated_likes_count DESC";
 
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
