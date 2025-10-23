@@ -51,7 +51,7 @@ public class FilmDirectorRepository extends BaseRepository<FilmDirector> {
         this.delete(DELETE_FILM_DIRECTOR_QUERY, filmId, directorId);
     }
 
-    public void addDirectors(Long filmId, List<Long> directorIds){
+    public void addDirectors(Long filmId, List<Long> directorIds) {
         this.jdbc.batchUpdate(ADD_FILM_DIRECTOR_QUERY, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {

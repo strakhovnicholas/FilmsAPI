@@ -60,6 +60,10 @@ public class FilmService {
         return filmStorage.getTopN(count, genreId, year);
     }
 
+    public Collection<Film> getFilmsByIds(Collection<Long> ids) {
+        return this.filmStorage.getFilmsByIds(ids);
+    }
+
     public Film updateFilm(@Valid Film film) {
         Film updatedFilm = filmStorage.updateFilm(film);
         if (!Objects.isNull(film.getDirectors())) {
@@ -114,6 +118,7 @@ public class FilmService {
             this.filmDirectorStorage.addDirectors(addedFilm.getId(), new ArrayList<>(incomingDirectorIds));
             addedFilm.setDirectors(existingStorageDirectors);
         }
+
         return addedFilm;
     }
 
@@ -129,5 +134,9 @@ public class FilmService {
 
     public List<Film> searchFilmsByDirectorOrTitleViaSubstring(String querySubstring, List<String> by) {
         return this.filmStorage.searchFilmsByDirectorOrTitleViaSubstring(querySubstring, by);
+    }
+
+    public void deleteFilm(long id) {
+        filmStorage.deleteFilm(id);
     }
 }

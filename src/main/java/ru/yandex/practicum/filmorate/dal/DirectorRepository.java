@@ -9,8 +9,10 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.mapper.DirectorRowMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class DirectorRepository extends BaseRepository<Director> {

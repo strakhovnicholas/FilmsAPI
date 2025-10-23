@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dal.FilmRepository;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.util.DirectorFilmSortValues;
 
@@ -22,6 +23,7 @@ public class FilmDbStorage implements FilmStorage {
         this.filmRepository = filmRepository;
     }
 
+
     @Override
     public Film addFilm(Film film) {
         Optional<Film> addedFilm = filmRepository.addFilm(film);
@@ -38,7 +40,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Optional<Film> getFilm(long id) {
-        return filmRepository.getFilm(id);
+        Optional<Film> film = filmRepository.getFilm(id);
+        if (film.isEmpty()) {
+            throw new NotFoundException("film wasn't found");
+        }
+        return film;
     }
 
     @Override
@@ -57,5 +63,19 @@ public class FilmDbStorage implements FilmStorage {
 
     public List<Film> searchFilmsByDirectorOrTitleViaSubstring(String querySubstring, List<String> by) {
         return this.filmRepository.searchFilmsByDirectorOrTitleViaSubstring(querySubstring,by);
+    }
+
+    @Override
+    public void deleteFilm(long id) {
+        Optional<Film> film = filmRepository.getFilm(id);
+        if (film.isEmpty()) {
+            throw new NotFoundException("film wasn't found");
+        }
+        filmRepository.delete(id);
+    }
+
+    @Override
+    public List<Film> getFilmsByIds(Collection<Long> ids) {
+        return filmRepository.getFilmsByIds(ids);
     }
 }

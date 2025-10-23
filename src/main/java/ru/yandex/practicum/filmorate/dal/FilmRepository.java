@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.util.DirectorFilmSortValues;
 
 import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +49,7 @@ public class FilmRepository extends BaseRepository<Film> {
             ") films \n";
 
     private static final String GET_TOP_N_QUERY_LIMIT = GET_TOP_N_QUERY_BASE + " LIMIT ?\n";
+    private static final String DELETE_FILM_QUERY = "DELETE FROM PUBLIC.\"film\" WHERE id = ?";
 
     private static final String BASE_FILM_DIRECTOR_QUERY = """
         SELECT f.id AS film_id, f.name, f.description, f.release_date, f.duration,
@@ -165,7 +167,16 @@ public class FilmRepository extends BaseRepository<Film> {
         } else {
             return this.findManyExtract(GET_TOP_N_QUERY_BASE, new FilmWithItemsExtractor(), year, allYear, genreId, allGenre);
         }
+    }
 
+    public List<Film> getFilmsByIds(Collection<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+
+        String placeholders = String.join(",", ids.stream().map(id -> "?").toList());
+        String sql = "SELECT * FROM PUBLIC.\"film\" WHERE id IN (" + placeholders + ")";
+        return findMany(sql, ids.toArray());
     }
 
     public List<Film> getDirectorFilms(long directorId, DirectorFilmSortValues sortBy) {
@@ -201,5 +212,11 @@ public class FilmRepository extends BaseRepository<Film> {
                 directorQuery,
                 querySubstring
         );
+    }
+
+    public void delete(long id) {
+        delete("DELETE FROM PUBLIC.\"user_film_like\" WHERE film_id = ?", id);
+        delete("DELETE FROM PUBLIC.\"film_genre\" WHERE film_id = ?", id);
+        delete("DELETE FROM PUBLIC.\"film\" WHERE id = ?", id);
     }
 }
