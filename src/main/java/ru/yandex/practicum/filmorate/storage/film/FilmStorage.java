@@ -21,4 +21,6 @@ public interface FilmStorage {
     List<Film> getDirectorFilms(Long directorId, DirectorFilmSortValues sortBy);
 
     public List<Film> getFilmsByIds(Collection<Long> ids);
+
+    void deleteFilm(long id);
 }

@@ -29,7 +29,6 @@ public class UserController {
         return service.getAllUsers();
     }
 
-
     @PostMapping
     public User addUser(@Valid @RequestBody User user) throws ValidationException {
         return service.addUser(user);
@@ -58,6 +57,16 @@ public class UserController {
     @GetMapping("{id}/friends/common/{otherId}")
     Collection<User> getUserCommonFriends(@PathVariable long id, @PathVariable long otherId) {
         return service.getCommonFriends(id, otherId);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable long id) {
+        service.deleteUser(id);
+    }
+
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable long id) {
+        return service.getUserById(id);
     }
 
     @GetMapping("{id}/recommendations")

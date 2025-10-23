@@ -103,4 +103,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Film> getDirectorFilms(Long directorId, DirectorFilmSortValues sortBy) {
         return List.of();
     }
+
+    @Override
+    public void deleteFilm(long id) {
+        if (!films.containsKey(id)) {
+            throw new NotFoundException("Фильм не найден");
+        }
+        films.remove(id);
+    }
 }
