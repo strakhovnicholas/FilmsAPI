@@ -69,4 +69,9 @@ public class FilmDbStorage implements FilmStorage {
         }
         filmRepository.delete(id);
     }
+
+    @Override
+    public List<Film> getFilmsByIds(Collection<Long> ids) {
+        return filmRepository.getFilmsByIds(ids);
+    }
 }

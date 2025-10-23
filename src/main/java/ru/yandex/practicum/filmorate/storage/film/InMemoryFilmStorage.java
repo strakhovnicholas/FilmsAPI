@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.util.DirectorFilmSortValues;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Qualifier("InMemoryFilmStorage")
@@ -89,6 +90,13 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.stream()
                 .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
                 .toList().subList(0, Math.min(films.size(), count));
+    }
+
+    @Override
+    public List<Film> getFilmsByIds(Collection<Long> ids) {
+        Set<Long> idSet = new HashSet<>(ids);
+
+        return films.values().stream().filter((film -> idSet.contains(film.getId()))).collect(Collectors.toList());
     }
 
     @Override

@@ -60,6 +60,10 @@ public class FilmService {
         return filmStorage.getTopN(count, genreId, year);
     }
 
+    public Collection<Film> getFilmsByIds(Collection<Long> ids) {
+        return this.filmStorage.getFilmsByIds(ids);
+    }
+
     public Film updateFilm(@Valid Film film) {
         Film updatedFilm = filmStorage.updateFilm(film);
         if (!Objects.isNull(film.getDirectors())) {
